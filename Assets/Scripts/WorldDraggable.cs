@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 public class WorldDraggable : MonoBehaviour
 {
+    //types
     [SerializeField] public string type = default;
+    [SerializeField] public List<string> acceptableTypes = new List<string>();
 
     [Header("Drag Limits")]
     [SerializeField] private float minBorderX = -6.5f;
@@ -19,20 +22,30 @@ public class WorldDraggable : MonoBehaviour
     // We'll store the mask here
     private int sortGroupMask;
 
+    //tracking files
+    public static int ActiveFiles = 0;
+
     void Start()
     {
+        ActiveFiles++;
         cam = Camera.main;
+
+        //types
+        type = acceptableTypes[Random.Range(0, acceptableTypes.Count)];
 
         // Make sure this object has a Rigidbody2D set to Kinematic
         Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
         rb2d.isKinematic = true;
 
+
         // LayerMask.GetMask("SortGroup") gives you a bitmask that includes ONLY that layer
         sortGroupMask = LayerMask.GetMask("SortGroup");
+
     }
 
     private void OnMouseDown()
     {
+        Debug.Log("Started dragging " + type);
         isDragging = true;
 
         // Calculate offset from click point to object center
@@ -52,8 +65,6 @@ public class WorldDraggable : MonoBehaviour
 
         if (hit.collider != null)
         {
-            Debug.Log("Dropped over: " + hit.collider.name);
-
             // Get the SortGroup component on the hit object (or its parent)
             SortGroup sortGroup = hit.collider.GetComponentInParent<SortGroup>();
             if (sortGroup != null)

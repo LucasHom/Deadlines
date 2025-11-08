@@ -29,9 +29,10 @@ public class SortGroup : MonoBehaviour
         }
         else
         {
-            Debug.Log("Incorrectly sorted object of type: " + draggable.type);
+            GameManager.numIncorrect++;
         }
 
         Destroy(draggable.gameObject);
+        WorldDraggable.ActiveFiles--;
     }
 }
