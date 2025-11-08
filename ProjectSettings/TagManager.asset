@@ -13,8 +13,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - SortGroup
+  - Draggable
   - 
   - 
   - 
@@ -38,6 +38,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2140256559
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Monitor
+    uniqueID: 935866903
+    locked: 0
+  - name: Notes
+    uniqueID: 2940580961
     locked: 0
