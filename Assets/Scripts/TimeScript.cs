@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class TimeScript : MonoBehaviour
 {
     public Text timeText;
+    public bool atDeadline;
     private float fiveMinuteLength = 3.125f; // 3.125 means that it's a five minute day
     private float totalSeconds;
     private float fiveSecondTimer;
@@ -20,6 +21,7 @@ public class TimeScript : MonoBehaviour
         isPM = false;
         pastTwelve = false;
         isRunning = true;
+        atDeadline = false;
     }
 
     // Update is called once per frame
@@ -34,6 +36,15 @@ public class TimeScript : MonoBehaviour
         {
             totalSeconds += 5.0f;
             fiveSecondTimer = 0.0f;
+        }
+
+        if (Mathf.Round(totalSeconds) % 60 == 0 && Mathf.Round(totalSeconds) != 9*60)
+        {
+            atDeadline = true;
+        }
+        else
+        {
+            atDeadline = false;
         }
 
         // if it's 12 o'clock, make it PM
