@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class BarScript : MonoBehaviour
 {
+    public static int gamesWon = 0;
+
     public GameObject NoteSpawner;
     private bool inTrigger;
     private Collider2D currentCollider;
     public int notesHit = 0;
+
+    //[SerializeField] private AmbitionManager ambitionManager;
 
 
     // Start is called before the first frame update
@@ -26,6 +30,7 @@ public class BarScript : MonoBehaviour
             if (Input.GetKeyDown(keyToPress))
             {
                 //Debug.Log("BAM!");
+                NoteScript.ActiveNotes--;
                 Destroy(currentCollider.gameObject);
                 notesHit++;
             }
@@ -33,6 +38,7 @@ public class BarScript : MonoBehaviour
 
         if (notesHit == NoteSpawner.gameObject.GetComponent<NoteSpawnScript>().totalNotes)
         {
+            gamesWon++;
             Debug.Log("You hit all the notes!");
             notesHit = 0;
         }
@@ -50,7 +56,8 @@ public class BarScript : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        //Debug.Log("left collision");
+        
+        Debug.Log("left collision");
         inTrigger = false;
         currentCollider = null;
     }

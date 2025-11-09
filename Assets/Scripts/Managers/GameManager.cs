@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -15,13 +16,21 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float fileSpawnMinY = -1.5f;
     [SerializeField] private float fileSpawnMaxY = 1.5f;
 
+
     [SerializeField] private Sprite squareSprite;
-    [SerializeField] private Sprite goodSprite;
+    [SerializeField] private Sprite circleSprite;
+
+
+    [SerializeField] private AmbitionManager ambitionManager;
+
+    //UI
+    [SerializeField] private GameObject typeToShapeIndicator;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        typeToShapeIndicator.SetActive(false);
         numIncorrect = 0;
         StartCoroutine(GameLoop());
     }
@@ -34,20 +43,26 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameLoop()
     {
+        //define acceptable types and their sprites
         WorldDraggable.acceptableTypes.Add("good");
         WorldDraggable.acceptableTypes.Add("trash");
         WorldDraggable.typeSprites.Add(squareSprite);
-        WorldDraggable.typeSprites.Add(goodSprite);
+        WorldDraggable.typeSprites.Add(circleSprite);
 
         //one deadline for each hour
         for (int hour = 0; hour < 8; hour++)
         {
-            Debug.Log("start loop");
             WorldDraggable.BuildTypeSpriteDictionary();
 
+            //for debugging: print the type-sprite map
             foreach (var kvp in WorldDraggable.typeSpriteMap)
             {
                 Debug.Log($"Type: {kvp.Key} -> Sprite: {(kvp.Value != null ? kvp.Value.name : "null")}");
+            }
+
+            if (hour == 0) //change to be 2nd shift later
+            {
+                ambitionManager.ShowRecordIcon();
             }
 
 
@@ -59,6 +74,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WorkShift(int numToSort)
     {
+        typeToShapeIndicator.SetActive(true);
+
         //Spawn files
         for (int i = 0; i < numToSort; i++)
         {
@@ -72,6 +89,8 @@ public class GameManager : MonoBehaviour
 
         //setup timer
         yield return new WaitForSeconds(TimeScript.fiveMinuteLength + 1f);
+
+        typeToShapeIndicator.SetActive(false);
 
         //wait until timer reaches certain point
         yield return new WaitUntil(() => TimeScript.atDeadline); 

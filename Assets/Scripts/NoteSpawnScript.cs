@@ -1,53 +1,64 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NoteSpawnScript : MonoBehaviour
 {
+    [Header("Note Settings")]
     public GameObject note;
     public GameObject bar;
     public int totalNotes = 8;
     public int BPM = 95;
-    private float noteTime = 0;
+
+    [SerializeField] private AmbitionManager ambitionManager;
+
+    private float spawnInterval;
     private int notesSpawned = 0;
+    private Coroutine spawnRoutine;
 
-    // Start is called before the first frame update
-    void Start()
+    private void OnEnable()
     {
-        notesSpawned = totalNotes;
-        // SpawnWave should only be called when the GameLogic object calls it.
+        spawnInterval = 60f / BPM;
+
         SpawnWave();
+
+        spawnRoutine = StartCoroutine(SpawnNotesRoutine());
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
-        float bpmFloat = BPM;
-        float spawnTime = 1.0F / (bpmFloat / 60.0F);
-        if (spawnTime <= noteTime)
-        {
-            SpawnNote();
-            noteTime = 0;
-        }
-        else
-        {
-            noteTime += Time.deltaTime;
-        }
+        if (spawnRoutine != null)
+            StopCoroutine(spawnRoutine);
     }
 
-    void SpawnNote()
-    {
-        if (notesSpawned < totalNotes)
-        {
-            notesSpawned++;
-            Instantiate(note, transform.position, transform.rotation);
-            Debug.Log(notesSpawned);
-        }
-    }
-
-    void SpawnWave()
+    private void SpawnWave()
     {
         notesSpawned = 0;
-        bar.gameObject.GetComponent<BarScript>().notesHit = 0;
+        if (bar != null)
+        {
+            BarScript barScript = bar.GetComponent<BarScript>();
+            if (barScript != null)
+                barScript.notesHit = 0;
+        }
+    }
+
+    private IEnumerator SpawnNotesRoutine()
+    {
+        while (notesSpawned < totalNotes)
+        {
+            SpawnNote();
+            yield return new WaitForSeconds(spawnInterval);
+        }
+
+        yield return new WaitUntil(() => NoteScript.ActiveNotes <= 0);
+        yield return new WaitForSeconds(1f);
+        //create confetti effect here if success
+
+        ambitionManager.ShowRecordIcon();
+    }
+
+    private void SpawnNote()
+    {
+        Instantiate(note, transform.position, transform.rotation);
+        notesSpawned++;
     }
 }
