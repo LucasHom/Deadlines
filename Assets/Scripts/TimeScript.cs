@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TimeScript : MonoBehaviour
 {
-    public Text timeText;
-    public bool atDeadline;
-    private float fiveMinuteLength = 3.125f; // 3.125 means that it's a five minute day
+    public TextMeshProUGUI timeText;
+    public static bool atDeadline;
     private float totalSeconds;
     private float fiveSecondTimer;
     private bool isPM;
     private bool pastTwelve;
     private bool isRunning;
+
+    public static float fiveMinuteLength = 3.125f; // 3.125 means that it's a five minute day
 
     // Start is called before the first frame update
     void Start()

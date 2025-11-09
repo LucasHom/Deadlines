@@ -7,7 +7,7 @@ public class WorldDraggable : MonoBehaviour
 {
     //types
     [SerializeField] public string type = default;
-    [SerializeField] public List<string> acceptableTypes = new List<string>();
+    public static List<string> acceptableTypes = new List<string>();
 
     [Header("Drag Limits")]
     [SerializeField] private float minBorderX = -6.5f;
@@ -27,10 +27,11 @@ public class WorldDraggable : MonoBehaviour
 
     //Sprites
     [Header("Sprite Settings")]
-    [SerializeField] public List<Sprite> typeSprites = new List<Sprite>();
+
+    public static List<Sprite> typeSprites = new List<Sprite>();
 
     private SpriteRenderer spriteRenderer;
-    private Dictionary<string, Sprite> typeSpriteMap = new Dictionary<string, Sprite>();
+    public static Dictionary<string, Sprite> typeSpriteMap = new Dictionary<string, Sprite>();
 
     void Start()
     {
@@ -41,34 +42,37 @@ public class WorldDraggable : MonoBehaviour
         //types
         type = acceptableTypes[Random.Range(0, acceptableTypes.Count)];
 
-        // Make sure this object has a Rigidbody2D set to Kinematic
+        //rb2d
         Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
         rb2d.isKinematic = true;
 
-        // LayerMask.GetMask("SortGroup") gives you a bitmask that includes ONLY that layer
+        // gives u a bitmask that includes ONLY that layer
         sortGroupMask = LayerMask.GetMask("SortGroup");
+
+        //Set sprites
+        UpdateSpriteByType();
     }
 
 
-    // Builds a dictionary mapping each acceptable type to its corresponding sprite.
-    private void BuildTypeSpriteDictionary()
+    public static void BuildTypeSpriteDictionary()
     {
         typeSpriteMap.Clear();
 
-        // Ensure the lists match in length
-        if (acceptableTypes.Count != typeSprites.Count)
+
+        // 2. Copy and shuffle sprites
+        List<Sprite> shuffledSprites = new List<Sprite>(typeSprites);
+        for (int i = 0; i < shuffledSprites.Count; i++)
         {
-            Debug.LogWarning("acceptableTypes and typeSprites must have the same length!");
-            return;
+            int randomIndex = Random.Range(i, shuffledSprites.Count);
+            (shuffledSprites[i], shuffledSprites[randomIndex]) = (shuffledSprites[randomIndex], shuffledSprites[i]);
         }
 
-        for (int i = 0; i < acceptableTypes.Count; i++) //Make this random
+        for (int i = 0; i < acceptableTypes.Count; i++)
         {
             string key = acceptableTypes[i];
-            Sprite value = typeSprites[i];
+            Sprite value = shuffledSprites[i];
 
-            if (!typeSpriteMap.ContainsKey(key))
-                typeSpriteMap.Add(key, value);
+            typeSpriteMap.Add(key, value);
         }
     }
 
