@@ -100,10 +100,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   type: 
+  acceptableTypes:
+  - good
+  - trash
   minBorderX: -6.5
   minBorderY: -3.1
   maxBorderX: 6.5
   maxBorderY: 3.1
+  typeSprites:
+  - {fileID: 21300000, guid: 7ea07607b34c93541aad262e11fc307d, type: 3}
+  - {fileID: 21300000, guid: 107f549ac6527ce488292acdd0b235b2, type: 3}
 --- !u!61 &5466190349843390012
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 public class WorldDraggable : MonoBehaviour
 {
+    //types
     [SerializeField] public string type = default;
+    [SerializeField] public List<string> acceptableTypes = new List<string>();
 
     [Header("Drag Limits")]
     [SerializeField] private float minBorderX = -6.5f;
@@ -19,9 +22,24 @@ public class WorldDraggable : MonoBehaviour
     // We'll store the mask here
     private int sortGroupMask;
 
+    //tracking files
+    public static int ActiveFiles = 0;
+
+    //Sprites
+    [Header("Sprite Settings")]
+    [SerializeField] public List<Sprite> typeSprites = new List<Sprite>();
+
+    private SpriteRenderer spriteRenderer;
+    private Dictionary<string, Sprite> typeSpriteMap = new Dictionary<string, Sprite>();
+
     void Start()
     {
+        ActiveFiles++;
+        spriteRenderer = GetComponent<SpriteRenderer>();
         cam = Camera.main;
+
+        //types
+        type = acceptableTypes[Random.Range(0, acceptableTypes.Count)];
 
         // Make sure this object has a Rigidbody2D set to Kinematic
         Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
@@ -31,8 +49,48 @@ public class WorldDraggable : MonoBehaviour
         sortGroupMask = LayerMask.GetMask("SortGroup");
     }
 
+
+    // Builds a dictionary mapping each acceptable type to its corresponding sprite.
+    private void BuildTypeSpriteDictionary()
+    {
+        typeSpriteMap.Clear();
+
+        // Ensure the lists match in length
+        if (acceptableTypes.Count != typeSprites.Count)
+        {
+            Debug.LogWarning("acceptableTypes and typeSprites must have the same length!");
+            return;
+        }
+
+        for (int i = 0; i < acceptableTypes.Count; i++) //Make this random
+        {
+            string key = acceptableTypes[i];
+            Sprite value = typeSprites[i];
+
+            if (!typeSpriteMap.ContainsKey(key))
+                typeSpriteMap.Add(key, value);
+        }
+    }
+
+
+    // Sets the sprite based on the object's current type string.
+    public void UpdateSpriteByType()
+    {
+        if (spriteRenderer == null) return;
+
+        if (typeSpriteMap.TryGetValue(type, out Sprite newSprite))
+        {
+            spriteRenderer.sprite = newSprite;
+        }
+        else
+        {
+            Debug.LogWarning($"No sprite found for type '{type}'");
+        }
+    }
+
     private void OnMouseDown()
     {
+        Debug.Log("Started dragging " + type);
         isDragging = true;
 
         // Calculate offset from click point to object center
@@ -52,8 +110,6 @@ public class WorldDraggable : MonoBehaviour
 
         if (hit.collider != null)
         {
-            Debug.Log("Dropped over: " + hit.collider.name);
-
             // Get the SortGroup component on the hit object (or its parent)
             SortGroup sortGroup = hit.collider.GetComponentInParent<SortGroup>();
             if (sortGroup != null)
