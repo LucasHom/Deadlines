@@ -11,11 +11,12 @@ public class GreyscaleScript : MonoBehaviour
     void Start()
     {
         material = new Material(shader);
+        SetGreyscalePercentage(1.0f);
     }
 
     void Update()
     {
-        SetGreyscalePercentage(1.0f);
+
     }
 
     void SetGreyscalePercentage(float percentage)

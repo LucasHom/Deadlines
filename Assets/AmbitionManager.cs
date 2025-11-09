@@ -19,7 +19,7 @@ public class AmbitionManager : MonoBehaviour
     {
         noteSpawnScript = RythGame.GetComponent<NoteSpawnScript>();
         RythGame.SetActive(false);
-        RecordIcon.SetActive(false);
+        //RecordIcon.SetActive(false);
     }
 
     // Update is called once per frame
