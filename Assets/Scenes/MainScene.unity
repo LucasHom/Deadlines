@@ -1824,6 +1824,7 @@ MonoBehaviour:
   totalNotes: 8
   BPM: 95
   ambitionManager: {fileID: 1466661639}
+  camera: {fileID: 519420028}
 --- !u!212 &7158099040848194414
 SpriteRenderer:
   m_ObjectHideFlags: 0

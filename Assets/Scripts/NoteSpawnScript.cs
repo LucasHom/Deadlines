@@ -15,6 +15,10 @@ public class NoteSpawnScript : MonoBehaviour
     private int notesSpawned = 0;
     private Coroutine spawnRoutine;
 
+    [SerializeField] private GameObject camera;
+    private float greyscale = 1.0f;
+    private float decreaseValue = 1.0f / 3.0f;
+
     private void OnEnable()
     {
         spawnInterval = 60f / BPM;
@@ -52,6 +56,12 @@ public class NoteSpawnScript : MonoBehaviour
         yield return new WaitUntil(() => NoteScript.ActiveNotes <= 0);
         yield return new WaitForSeconds(1f);
         //create confetti effect here if success
+        if (greyscale >= decreaseValue-0.1f)
+        {
+            greyscale -= decreaseValue;
+        }
+        GreyscaleScript greyscaleScript = camera.GetComponent<GreyscaleScript>();
+        greyscaleScript.SetGreyscalePercentage(greyscale);
 
         ambitionManager.ShowRecordIcon();
     }

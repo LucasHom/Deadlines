@@ -11,7 +11,6 @@ public class GreyscaleScript : MonoBehaviour
     void Start()
     {
         material = new Material(shader);
-        SetGreyscalePercentage(1.0f);
     }
 
     void Update()
@@ -19,7 +18,7 @@ public class GreyscaleScript : MonoBehaviour
 
     }
 
-    void SetGreyscalePercentage(float percentage)
+    public void SetGreyscalePercentage(float percentage)
     {
         material.SetFloat("_Blend", percentage);
     }
