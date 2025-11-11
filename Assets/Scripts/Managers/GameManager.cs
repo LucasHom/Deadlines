@@ -44,6 +44,9 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        
+
+
         equalsText.text = "=\n=\n";
         dropboxFolderImage.enabled = false;
         dropboxFolder.SetActive(false);
@@ -68,6 +71,9 @@ public class GameManager : MonoBehaviour
         WorldDraggable.typeSprites.Add(circleSprite);
 
         int files = 0;
+
+        yield return new WaitForSeconds(0.1f);
+        SFXManager.Instance.PlayLoopingMusic("whitenoise");
 
         //one deadline for each hour
         for (int hour = 0; hour < 8; hour++)

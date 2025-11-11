@@ -39,14 +39,12 @@ public class BarScript : MonoBehaviour
         if (notesHit == NoteSpawner.gameObject.GetComponent<NoteSpawnScript>().totalNotes)
         {
             gamesWon++;
-            Debug.Log("You hit all the notes!");
             notesHit = 0;
         }
     }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        //Debug.Log("touching");
         inTrigger = true;
         if (collider.CompareTag("Note"))
         {
@@ -56,8 +54,6 @@ public class BarScript : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D collider)
     {
-        
-        Debug.Log("left collision");
         inTrigger = false;
         currentCollider = null;
     }

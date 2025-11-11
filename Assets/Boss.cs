@@ -25,6 +25,7 @@ public class Boss : MonoBehaviour
 
     private void OnEnable()
     {
+
         startPos = new Vector3(-10f, 3, 0);
         transform.position = startPos;
         StartCoroutine(MoveSequence());
@@ -39,6 +40,7 @@ public class Boss : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         bossMessage.SetActive(true);
         bossArm.SetActive(true);
+        SFXManager.Instance.PlaySFX("bossTalk");
         yield return new WaitForSeconds(waitTime);
         bossArm.SetActive(false);
         yield return new WaitForSeconds(0.5f);

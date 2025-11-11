@@ -15,7 +15,7 @@ public class NoteSpawnScript : MonoBehaviour
     private int notesSpawned = 0;
     private Coroutine spawnRoutine;
 
-    //[SerializeField] private GameObject camera;
+    [SerializeField] private GameObject cam;
     private float greyscale = 1.0f;
     private float decreaseValue = 1.0f / 3.0f;
 
@@ -60,7 +60,7 @@ public class NoteSpawnScript : MonoBehaviour
         {
             greyscale -= decreaseValue;
         }
-        GreyscaleScript greyscaleScript = GetComponent<Camera>().GetComponent<GreyscaleScript>();
+        GreyscaleScript greyscaleScript = cam.GetComponent<GreyscaleScript>();
         greyscaleScript.SetGreyscalePercentage(greyscale);
 
         ambitionManager.ShowRecordIcon();
