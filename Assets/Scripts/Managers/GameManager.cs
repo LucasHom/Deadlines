@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Sprite squareSprite;
     [SerializeField] private Sprite circleSprite;
+    [SerializeField] private Sprite triangleSprite;
 
 
     [SerializeField] private AmbitionManager ambitionManager;
@@ -30,11 +31,24 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] public Image isFolder;
     [SerializeField] public Image isTrash;
+    [SerializeField] public Image isDropbox;
+
+
+    [Header("Adding folder")]
+    [SerializeField] private TextMeshProUGUI equalsText;
+    [SerializeField] private Image dropboxFolderImage;
+    [SerializeField] private GameObject dropboxFolder;
+    [SerializeField] private Image isDropboxImage;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        equalsText.text = "=\n=\n";
+        dropboxFolderImage.enabled = false;
+        dropboxFolder.SetActive(false);
+        isDropboxImage.enabled = false;
+
         numIncorrect = 0;
         StartCoroutine(GameLoop());
     }
@@ -53,24 +67,60 @@ public class GameManager : MonoBehaviour
         WorldDraggable.typeSprites.Add(squareSprite);
         WorldDraggable.typeSprites.Add(circleSprite);
 
+        int files = 0;
+
         //one deadline for each hour
         for (int hour = 0; hour < 8; hour++)
         {
+
+            switch (hour)
+            {
+                case 0:
+                    
+                    files = 10;
+                    ambitionManager.ShowRecordIcon();
+                    break;
+
+                case 1:
+                    files = 12;
+                    break;
+
+                case 2:
+                    files = 14;
+                    break;
+
+                case 3:
+                    files = 16;
+                    break;
+
+                case 4:
+                    files = 8;
+                    //add dropbox folder
+                    equalsText.text = "=\n=\n=";
+                    dropboxFolderImage.enabled = true;
+                    dropboxFolder.SetActive(true);
+                    isDropboxImage.enabled = true;
+                    WorldDraggable.acceptableTypes.Add("dropbox");
+                    WorldDraggable.typeSprites.Add(triangleSprite);
+                    break;
+
+                case 5:
+                    files = 10;
+                    break;
+
+                case 6:
+                    files = 12;
+                    break;
+
+                case 7:
+                    files = 12;
+                    break;
+            }
+
             WorldDraggable.BuildTypeSpriteDictionary();
 
-            //for debugging: print the type-sprite map
-            foreach (var kvp in WorldDraggable.typeSpriteMap)
-            {
-                Debug.Log($"Type: {kvp.Key} -> Sprite: {(kvp.Value != null ? kvp.Value.name : "null")}");
-            }
 
-            if (hour == 0) //change to be 2nd shift later
-            {
-                ambitionManager.ShowRecordIcon();
-            }
-
-
-            yield return StartCoroutine(WorkShift(10));
+            yield return StartCoroutine(WorkShift(files));
             
         }
 
@@ -80,6 +130,8 @@ public class GameManager : MonoBehaviour
     {
         boss.SetActive(true);
 
+        int sortOrder = 20;
+
         //Spawn files
         for (int i = 0; i < numToSort; i++)
         {
@@ -87,6 +139,9 @@ public class GameManager : MonoBehaviour
             GameObject file = Instantiate(filePrefab, spawnPosition, Quaternion.identity);
             WorldDraggable fileScript = file.GetComponent<WorldDraggable>();
             fileScript.type = WorldDraggable.acceptableTypes[Random.Range(0, WorldDraggable.acceptableTypes.Count)];
+
+            file.GetComponent<SpriteRenderer>().sortingOrder = sortOrder;
+            sortOrder++;
 
             yield return new WaitForSeconds(0.08f);
         }

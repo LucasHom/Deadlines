@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(Rigidbody2D))]
 public class WorldDraggable : MonoBehaviour
 {
-    //types
     [SerializeField] public string type = default;
     public static List<string> acceptableTypes = new List<string>();
 
@@ -15,55 +16,39 @@ public class WorldDraggable : MonoBehaviour
     [SerializeField] private float maxBorderX = 6.5f;
     [SerializeField] private float maxBorderY = 3.1f;
 
-    private Camera cam;
+    private static Camera cam;
+    private static WorldDraggable currentlyDragging;
+
     private bool isDragging;
     private Vector3 offset;
 
-    // We'll store the mask here
-    private int sortGroupMask;
-
-    //tracking files
     public static int ActiveFiles = 0;
     public SortGroup sortGroup;
-    private GameManager gameManager;    
+    private GameManager gameManager;
 
-    //Sprites
     [Header("Sprite Settings")]
-
     public static List<Sprite> typeSprites = new List<Sprite>();
-
     private SpriteRenderer spriteRenderer;
     public static Dictionary<string, Sprite> typeSpriteMap = new Dictionary<string, Sprite>();
-
-    
 
     void Start()
     {
         ActiveFiles++;
         spriteRenderer = GetComponent<SpriteRenderer>();
-        cam = Camera.main;
+        if (cam == null) cam = Camera.main;
 
-        //types
+        // assign random type
         type = acceptableTypes[Random.Range(0, acceptableTypes.Count)];
 
-        //rb2d
         Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
         rb2d.isKinematic = true;
 
-        // gives u a bitmask that includes ONLY that layer
-        sortGroupMask = LayerMask.GetMask("SortGroup");
-
-        //Set sprites
         UpdateSpriteByType();
     }
-
 
     public static void BuildTypeSpriteDictionary()
     {
         typeSpriteMap.Clear();
-
-
-        // 2. Copy and shuffle sprites
         List<Sprite> shuffledSprites = new List<Sprite>(typeSprites);
         for (int i = 0; i < shuffledSprites.Count; i++)
         {
@@ -75,13 +60,10 @@ public class WorldDraggable : MonoBehaviour
         {
             string key = acceptableTypes[i];
             Sprite value = shuffledSprites[i];
-
             typeSpriteMap.Add(key, value);
         }
     }
 
-
-    // Sets the sprite based on the object's current type string.
     public void UpdateSpriteByType()
     {
         gameManager = FindObjectOfType<GameManager>();
@@ -97,8 +79,12 @@ public class WorldDraggable : MonoBehaviour
             {
                 gameManager.isFolder.sprite = newSprite;
                 gameManager.isFolder.SetNativeSize();
-            }   
-            //add more for future folders
+            }
+            if (type == "dropbox")
+            {
+                gameManager.isDropbox.sprite = newSprite;
+                gameManager.isDropbox.SetNativeSize();
+            }
         }
         else
         {
@@ -106,47 +92,95 @@ public class WorldDraggable : MonoBehaviour
         }
     }
 
-    private void OnMouseDown()
+    void Update()
+    {
+        // detect click manually so we can pick topmost
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(mousePos, Vector2.zero);
+
+            if (hits.Length > 0)
+            {
+                // find topmost by sortingOrder
+                RaycastHit2D topHit = hits[0];
+                int highestOrder = int.MinValue;
+
+                foreach (var hit in hits)
+                {
+                    var draggable = hit.collider.GetComponent<WorldDraggable>();
+                    if (draggable != null)
+                    {
+                        var sr = draggable.GetComponent<SpriteRenderer>();
+                        if (sr != null && sr.sortingOrder > highestOrder)
+                        {
+                            highestOrder = sr.sortingOrder;
+                            topHit = hit;
+                        }
+                    }
+                }
+
+                WorldDraggable topDraggable = topHit.collider.GetComponent<WorldDraggable>();
+                if (topDraggable != null)
+                {
+                    topDraggable.BeginDrag(mousePos);
+                }
+            }
+        }
+
+        if (Input.GetMouseButton(0) && currentlyDragging != null)
+        {
+            Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
+            currentlyDragging.ContinueDrag(mousePos);
+        }
+
+        if (Input.GetMouseButtonUp(0) && currentlyDragging != null)
+        {
+            currentlyDragging.EndDrag();
+        }
+    }
+
+    private void BeginDrag(Vector2 mouseWorldPos)
     {
         Debug.Log("Started dragging " + type);
         isDragging = true;
+        currentlyDragging = this;
 
-        // Calculate offset from click point to object center
-        Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+        // bring visually to front
+        spriteRenderer.sortingOrder = ++currentTopOrder;
+
         offset = transform.position - new Vector3(mouseWorldPos.x, mouseWorldPos.y, transform.position.z);
     }
 
-    private void OnMouseUp()
+    private void ContinueDrag(Vector2 mouseWorldPos)
+    {
+        if (!isDragging) return;
+
+        transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y, transform.position.z) + offset;
+
+        transform.position = new Vector3(
+            Mathf.Clamp(transform.position.x, minBorderX, maxBorderX),
+            Mathf.Clamp(transform.position.y, minBorderY, maxBorderY),
+            transform.position.z
+        );
+    }
+
+    private void EndDrag()
     {
         isDragging = false;
-        if (sortGroup != null)
+        currentlyDragging = null;
+
+        if (sortGroup != null && sortGroup.objTouching != null)
         {
-            if (sortGroup.objTouching != null)
+            WorldDraggable draggable = sortGroup.objTouching.GetComponent<WorldDraggable>();
+            if (draggable != null)
             {
-                WorldDraggable draggable = sortGroup.objTouching.GetComponent<WorldDraggable>();
-                if (draggable != null)
-                {
-                    sortGroup.TrySort(draggable);
-                }
+                sortGroup.TrySort(draggable);
             }
         }
     }
 
-    void Update()
-    {
-        if (isDragging)
-        {
-            Vector3 mouseWorldPos = cam.ScreenToWorldPoint(Input.mousePosition);
-            transform.position = new Vector3(mouseWorldPos.x, mouseWorldPos.y, transform.position.z) + offset;
-
-            // Restrict movement within borders
-            transform.position = new Vector3(
-                Mathf.Clamp(transform.position.x, minBorderX, maxBorderX),
-                Mathf.Clamp(transform.position.y, minBorderY, maxBorderY),
-                transform.position.z
-            );
-        }
-    }
-
     public bool IsDragging => isDragging;
+
+    private static int currentTopOrder = 0;
 }
