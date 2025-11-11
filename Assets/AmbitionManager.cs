@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AmbitionManager : MonoBehaviour
 {
 
     [SerializeField] private GameObject RythGame;
     [SerializeField] private GameObject RecordIcon;
+    [SerializeField] private GameObject GameOverScreen;
 
     private NoteSpawnScript noteSpawnScript;
 
@@ -20,6 +22,7 @@ public class AmbitionManager : MonoBehaviour
         noteSpawnScript = RythGame.GetComponent<NoteSpawnScript>();
         RythGame.SetActive(false);
         //RecordIcon.SetActive(false);
+        GameOverScreen.SetActive(false);
     }
 
     // Update is called once per frame
@@ -56,5 +59,18 @@ public class AmbitionManager : MonoBehaviour
         readyToRecord = true;
         RecordIcon.SetActive(true);
         RythGame.SetActive(false);
+    }
+
+    public void GameOver()
+    {
+        GameOverScreen.SetActive(true);
+        RythGame.SetActive(false);
+        RecordIcon.SetActive(false);
+    }
+
+    public void GameReset()
+    {
+        Debug.Log("game resetting");
+        SceneManager.LoadScene("MainScene");
     }
 }
