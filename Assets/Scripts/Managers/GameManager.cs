@@ -155,15 +155,11 @@ public class GameManager : MonoBehaviour
 
         int percentCorrect = ((numToSort - numIncorrect) * 100) / numToSort;
 
-        if (WorldDraggable.ActiveFiles > 0)
+        if (percentCorrect < winPercentThreshold || WorldDraggable.ActiveFiles > 0) // or timer reached end before sorting all files    
         {
-            Debug.Log("There are still " + WorldDraggable.ActiveFiles + " files left unsorted! YOU LOSE!");
-            Time.timeScale = 0f;
-        }
-        if (percentCorrect < winPercentThreshold) // or timer reached end before sorting all files    
-        {   
-            Debug.Log("Shift over! You sorted only " + percentCorrect + "% of files correctly. YOU LOSE!");
-            Time.timeScale = 0f;
+            Debug.Log("Shift over, you lose!");
+            // Time.timeScale = 0f;
+            ambitionManager.GameOver();
         }
         else
         {
