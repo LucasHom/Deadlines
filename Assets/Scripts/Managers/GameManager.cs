@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,15 +23,18 @@ public class GameManager : MonoBehaviour
 
 
     [SerializeField] private AmbitionManager ambitionManager;
+    [SerializeField] private GameObject boss;
 
     //UI
-    [SerializeField] private GameObject typeToShapeIndicator;
+    [SerializeField] private GameObject bossMessage;
+
+    [SerializeField] public Image isFolder;
+    [SerializeField] public Image isTrash;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        typeToShapeIndicator.SetActive(false);
         numIncorrect = 0;
         StartCoroutine(GameLoop());
     }
@@ -74,7 +78,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WorkShift(int numToSort)
     {
-        typeToShapeIndicator.SetActive(true);
+        boss.SetActive(true);
 
         //Spawn files
         for (int i = 0; i < numToSort; i++)
@@ -89,8 +93,6 @@ public class GameManager : MonoBehaviour
 
         //setup timer
         yield return new WaitForSeconds(TimeScript.fiveMinuteLength + 1f);
-
-        typeToShapeIndicator.SetActive(false);
 
         //wait until timer reaches certain point
         yield return new WaitUntil(() => TimeScript.atDeadline); 

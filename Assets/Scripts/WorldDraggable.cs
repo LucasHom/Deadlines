@@ -25,6 +25,7 @@ public class WorldDraggable : MonoBehaviour
     //tracking files
     public static int ActiveFiles = 0;
     public SortGroup sortGroup;
+    private GameManager gameManager;    
 
     //Sprites
     [Header("Sprite Settings")]
@@ -33,6 +34,8 @@ public class WorldDraggable : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     public static Dictionary<string, Sprite> typeSpriteMap = new Dictionary<string, Sprite>();
+
+    
 
     void Start()
     {
@@ -81,11 +84,21 @@ public class WorldDraggable : MonoBehaviour
     // Sets the sprite based on the object's current type string.
     public void UpdateSpriteByType()
     {
-        if (spriteRenderer == null) return;
-
+        gameManager = FindObjectOfType<GameManager>();
         if (typeSpriteMap.TryGetValue(type, out Sprite newSprite))
         {
             spriteRenderer.sprite = newSprite;
+            if (type == "trash")
+            {
+                gameManager.isTrash.sprite = newSprite;
+                gameManager.isTrash.SetNativeSize();
+            }
+            if (type == "good")
+            {
+                gameManager.isFolder.sprite = newSprite;
+                gameManager.isFolder.SetNativeSize();
+            }   
+            //add more for future folders
         }
         else
         {
@@ -117,23 +130,6 @@ public class WorldDraggable : MonoBehaviour
                 }
             }
         }
-
-
-        //// Raycast from camera through the mouse position
-        //Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-        //// This ray will ONLY consider colliders on the "SortGroup" layer
-        //RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity, sortGroupMask);
-
-        //if (hit.collider != null)
-        //{
-        //    // Get the SortGroup component on the hit object (or its parent)
-        //    SortGroup sortGroup = hit.collider.GetComponentInParent<SortGroup>();
-        //    if (sortGroup != null)
-        //    {
-        //        sortGroup.TrySort(this);
-        //    }
-        //}
     }
 
     void Update()

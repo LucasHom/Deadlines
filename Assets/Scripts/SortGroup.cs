@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 [RequireComponent(typeof(Collider2D))] //basically just to ensure it has a collider for trigger detection
 public class SortGroup : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class SortGroup : MonoBehaviour
     private Vector3 originalScale;
 
     public GameObject objTouching;
+
 
     private void Start()
     {
@@ -17,7 +19,7 @@ public class SortGroup : MonoBehaviour
     {
         objTouching = col.gameObject;
         objTouching.GetComponent<WorldDraggable>().sortGroup = this;
-        transform.localScale = originalScale * 1.1f; // enlarge visually when hovering over with file
+        transform.localScale = originalScale * 1.2f; // enlarge visually when hovering over with file
     }
 
     private void OnTriggerExit2D(Collider2D col)
