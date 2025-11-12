@@ -93,7 +93,6 @@ public class GameManager : MonoBehaviour
                 case 0:
                     
                     files = 10;
-                    ambitionManager.ShowRecordIcon(); // REMOVE BEFORE BUILDING
                     break;
 
                 case 1:

@@ -3129,6 +3129,7 @@ MonoBehaviour:
   drumLoop: {fileID: 1901446826856332573, guid: 674d4e9b6688a89dabc93aa5a7e34daf, type: 3}
   bass: {fileID: 9060696876850480483, guid: be84b631961e3ad4d8c2617380f120d4, type: 3}
   melody: {fileID: 5545821847476351606, guid: cfb220048eee4ec53b610b0130e5f60a, type: 3}
+  fulltrack: {fileID: 1872648731441694307, guid: 7bfad8745ea1d3e71929600844f7ea91, type: 3}
   shouldMusicPlay: 0
   metronomeRunning: 0
   currentTrackIndex: 0
