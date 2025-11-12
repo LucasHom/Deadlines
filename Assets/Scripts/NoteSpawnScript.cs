@@ -10,6 +10,7 @@ public class NoteSpawnScript : MonoBehaviour
     public int BPM = 95;
 
     [SerializeField] private AmbitionManager ambitionManager;
+    [SerializeField] private ProgressBar progressBar;
 
     private float spawnInterval;
     private int notesSpawned = 0;
@@ -63,6 +64,11 @@ public class NoteSpawnScript : MonoBehaviour
         }
         GreyscaleScript greyscaleScript = cam.GetComponent<GreyscaleScript>();
         greyscaleScript.SetGreyscalePercentage(greyscale);
+        
+        //set progress bar
+        progressBar.SetProgress(Mathf.Abs(1-greyscale));
+
+
         Debug.Log(greyscale);
         if (greyscale <= 0)
         {
