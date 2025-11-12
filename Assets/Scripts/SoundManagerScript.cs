@@ -8,6 +8,7 @@ public class SoundManagerScript : MonoBehaviour
     public GameObject drumLoop;
     public GameObject bass;
     public GameObject melody;
+    public GameObject fulltrack;
     private float delaySeconds = 2.0f; // duration for spawned notes to hit the bar
     private float currentTime = 0;
     private bool musicStarted = false;
@@ -56,12 +57,18 @@ public class SoundManagerScript : MonoBehaviour
         currentTrack = Instantiate(track, transform.position, transform.rotation);
         currentTrack.GetComponent<AudioSource>().mute = false;
     }
-    
+
     void StopTrack()
     {
         if (currentTrack != null)
         {
-            currentTrack.GetComponent<AudioSource>().mute = true; 
+            currentTrack.GetComponent<AudioSource>().mute = true;
         }
+    }
+    
+    public void EndingCredits()
+    {
+        StopTrack();
+        StartTrack(fulltrack);
     }
 }

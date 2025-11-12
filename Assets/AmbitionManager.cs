@@ -60,6 +60,7 @@ public class AmbitionManager : MonoBehaviour
         RecordIcon.SetActive(true);
         RythGame.SetActive(false);
         GetComponent<SoundManagerScript>().shouldMusicPlay = false;
+        GetComponent<SoundManagerScript>().metronomeRunning = false;
     }
 
     public void GameOver()
@@ -75,6 +76,7 @@ public class AmbitionManager : MonoBehaviour
         WinScreen.SetActive(true);
         RythGame.SetActive(false);
         RecordIcon.SetActive(false);
+        GetComponent<SoundManagerScript>().EndingCredits();
         Time.timeScale = 0f;
     }
 }
